@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Auth/SocialLogin.dart';
 import 'package:flutter_application_1/Screens/Auth/signInScreen.dart';
 import 'package:flutter_application_1/Screens/Home%20Screen/homeScreen.dart';
-import 'package:flutter_application_1/Screens/SplashScreen/splashScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
