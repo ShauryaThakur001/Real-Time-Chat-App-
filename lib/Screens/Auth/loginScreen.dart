@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Auth/SocialLogin.dart';
 import 'package:flutter_application_1/Screens/Auth/signInScreen.dart';
+import 'package:flutter_application_1/Screens/Home%20Screen/homeScreen.dart';
+import 'package:flutter_application_1/Screens/SplashScreen/splashScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,6 +12,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final loginService = SocialLoginService();
+
   bool isVisible = false;
 
   TextEditingController emailController = TextEditingController();
@@ -186,7 +191,24 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(7),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () async {
+                          try {
+                            final user = await loginService.signInWithGoogle();
+
+                            if (user != null) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomeScreen(),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Login Failed")),
+                            );
+                          }
+                        },
                         child: Row(
                           children: [
                             Container(
