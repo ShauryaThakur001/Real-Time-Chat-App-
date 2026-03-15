@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Firebase/Auth/EmailPasswordLogin.dart';
 import 'package:flutter_application_1/Firebase/Auth/SocialLogin.dart';
+import 'package:flutter_application_1/Firebase/FireStore/fireStore.dart';
 import 'package:flutter_application_1/Screens/Auth/signInScreen.dart';
 import 'package:flutter_application_1/Screens/Home%20Screen/homeScreen.dart';
 
@@ -158,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       if(_formKey.currentState!.validate()){
                         User? user= await emailService.login(emailController.text.trim(), passwordController.text.trim());
                         if(user!=null){
-                          print("With if: $user");
+                          fireStore().saveUser(user.uid , emailController.text.trim());
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
                         }
                         else{
@@ -209,6 +210,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             final user = await loginService.signInWithGoogle();
 
                             if (user != null) {
+
+                              fireStore().saveUser(user.user!.uid, emailController.text.trim());
+                              
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
