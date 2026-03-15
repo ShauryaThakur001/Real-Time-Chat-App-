@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Firebase/Auth/EmailPasswordLogin.dart';
 import 'package:flutter_application_1/Firebase/Auth/SocialLogin.dart';
 import 'package:flutter_application_1/Firebase/FireStore/fireStore.dart';
+import 'package:flutter_application_1/Models/UserModel.dart';
 import 'package:flutter_application_1/Screens/Auth/signInScreen.dart';
 import 'package:flutter_application_1/Screens/Home%20Screen/homeScreen.dart';
 
@@ -15,7 +17,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final loginService = SocialLoginService();
-  final emailService= Emailpasswordlogin();
+  final emailService = Emailpasswordlogin();
 
   bool isVisible = false;
 
@@ -155,15 +157,36 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
-                    onPressed: () async{
-                      if(_formKey.currentState!.validate()){
-                        User? user= await emailService.login(emailController.text.trim(), passwordController.text.trim());
-                        if(user!=null){
-                          fireStore().saveUser(user.uid , emailController.text.trim());
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
-                        }
-                        else{
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login Failed")));
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        User? user = await emailService.login(
+                          emailController.text.trim(),
+                          passwordController.text.trim(),
+                        );
+
+                        if (user != null) {
+                          final firebaseUser = user;
+
+                          UserModel userModel = UserModel(
+                            uid: firebaseUser.uid,
+                            name: firebaseUser.displayName ?? "Unknown",
+                            email: firebaseUser.email ?? "",
+                            photoUrl: firebaseUser.photoURL ?? "https://www.aquasafemine.com/wp-content/uploads/2018/06/dummy-man-570x570.png",
+                            createdAt: Timestamp.now(),
+                          );
+
+                          await FireStoreService().saveUser(userModel);
+
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HomeScreen(),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Login Failed")),
+                          );
                         }
                       }
                     },
@@ -207,12 +230,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         onPressed: () async {
                           try {
-                            final user = await loginService.signInWithGoogle();
+                            final userCredential = await loginService
+                                .signInWithGoogle();
 
-                            if (user != null) {
+                            if (userCredential != null) {
+                              final firebaseUser = userCredential.user!;
 
-                              fireStore().saveUser(user.user!.uid, emailController.text.trim());
-                              
+                              UserModel userModel = UserModel(
+                                uid: firebaseUser.uid,
+                                name: firebaseUser.displayName ?? "Unknown",
+                                email: firebaseUser.email ?? "",
+                                photoUrl: firebaseUser.photoURL ?? "https://www.aquasafemine.com/wp-content/uploads/2018/06/dummy-man-570x570.png",
+                                createdAt: Timestamp.now(),
+                              );
+
+                              await FireStoreService().saveUser(userModel);
+
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
@@ -222,7 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Login Failed")),
+                              const SnackBar(content: Text("Login Failed")),
                             );
                           }
                         },
