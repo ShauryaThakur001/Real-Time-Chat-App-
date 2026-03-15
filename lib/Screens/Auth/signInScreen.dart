@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Auth/EmailPasswordLogin.dart';
+import 'package:flutter_application_1/Firebase/Auth/EmailPasswordLogin.dart';
 import 'package:flutter_application_1/Screens/Auth/loginScreen.dart';
 
 class SignInScreen extends StatefulWidget {

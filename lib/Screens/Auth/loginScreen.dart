@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Auth/EmailPasswordLogin.dart';
-import 'package:flutter_application_1/Auth/SocialLogin.dart';
+import 'package:flutter_application_1/Firebase/Auth/EmailPasswordLogin.dart';
+import 'package:flutter_application_1/Firebase/Auth/SocialLogin.dart';
 import 'package:flutter_application_1/Screens/Auth/signInScreen.dart';
 import 'package:flutter_application_1/Screens/Home%20Screen/homeScreen.dart';
 
