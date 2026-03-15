@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Auth/EmailPasswordLogin.dart';
 import 'package:flutter_application_1/Auth/SocialLogin.dart';
 import 'package:flutter_application_1/Screens/Auth/signInScreen.dart';
 import 'package:flutter_application_1/Screens/Home%20Screen/homeScreen.dart';
@@ -12,6 +14,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final loginService = SocialLoginService();
+  final emailService= Emailpasswordlogin();
 
   bool isVisible = false;
 
@@ -91,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     validator: (value) {
                       if (emailController.text.isEmpty ||
-                          !passwordController.text.contains('@')) {
+                          !emailController.text.contains('@')) {
                         return "Enter correct email";
                       }
                       return null;
@@ -151,7 +154,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () async{
+                      if(_formKey.currentState!.validate()){
+                        User? user= await emailService.login(emailController.text.trim(), passwordController.text.trim());
+                        if(user!=null){
+                          print("With if: $user");
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+                        }
+                        else{
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login Failed")));
+                        }
+                      }
+                    },
                     child: Text(
                       "Sign In",
                       style: TextStyle(color: Colors.white, fontSize: 20),

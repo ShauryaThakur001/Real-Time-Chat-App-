@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Auth/EmailPasswordLogin.dart';
+import 'package:flutter_application_1/Screens/Auth/loginScreen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -8,6 +11,8 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  final emailService = Emailpasswordlogin();
+
   bool isVisible = false;
   bool isVisible2 = false;
 
@@ -120,7 +125,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       validator: (value) {
                         if (emailController.text.isEmpty ||
-                            !passwordController.text.contains('@')) {
+                            !emailController.text.contains('@')) {
                           return "Enter correct email";
                         }
                         return null;
@@ -229,9 +234,31 @@ class _SignInScreenState extends State<SignInScreen> {
                           borderRadius: BorderRadius.circular(6),
                         ),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          print("Sign Up Successful");
+                          User? user = await emailService.signUp(
+                            emailController.text.trim(),
+                            passwordController.text.trim(),
+                          );
+
+                          if (user != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Account Created Successfully"),
+                              ),
+                            );
+
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginScreen(),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Signup Failed")),
+                            );
+                          }
                         }
                       },
                       child: Text(
