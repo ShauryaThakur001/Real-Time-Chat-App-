@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Firebase/Auth/EmailPasswordLogin.dart';
+import 'package:flutter_application_1/Screens/Auth/loginScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -83,6 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       return userChat(
                         name: user["name"],
                         imageUrl: user["photoUrl"],
+                        uid: user["uid"],
                       );
                     },
                     separatorBuilder: (BuildContext context, int index) {
@@ -105,8 +107,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class userChat extends StatelessWidget {
   final String name;
+  final String uid;
   final String imageUrl;
-  const userChat({super.key, required this.name, required this.imageUrl});
+  const userChat({super.key, required this.name, required this.imageUrl, required this.uid});
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +124,28 @@ class userChat extends StatelessWidget {
             backgroundImage: NetworkImage(imageUrl),
           ),
           title: Text(name, style: TextStyle(fontSize: 19)),
+          onTap: () {
+            Navigator.push(context,MaterialPageRoute(builder: (context)=>ChatScreen(userId: name)));
+          },
         ),
+      ),
+    );
+  }
+}
+
+class ChatScreen extends StatelessWidget {
+  final String userId;
+
+  const ChatScreen({super.key, required this.userId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Chat"),
+      ),
+      body: Center(
+        child: Text("Chat with $userId"),
       ),
     );
   }
