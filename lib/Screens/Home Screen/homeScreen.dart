@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Firebase/Auth/EmailPasswordLogin.dart';
-import 'package:flutter_application_1/Screens/Auth/loginScreen.dart';
+import 'package:flutter_application_1/Screens/Home%20Screen/ChatScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -125,27 +125,9 @@ class userChat extends StatelessWidget {
           ),
           title: Text(name, style: TextStyle(fontSize: 19)),
           onTap: () {
-            Navigator.push(context,MaterialPageRoute(builder: (context)=>ChatScreen(userId: name)));
+            Navigator.push(context,MaterialPageRoute(builder: (context)=>ChatScreen(userId: uid)));
           },
         ),
-      ),
-    );
-  }
-}
-
-class ChatScreen extends StatelessWidget {
-  final String userId;
-
-  const ChatScreen({super.key, required this.userId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Chat"),
-      ),
-      body: Center(
-        child: Text("Chat with $userId"),
       ),
     );
   }
