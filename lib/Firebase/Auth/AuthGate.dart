@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/Screens/Auth/loginScreen.dart';
-import 'package:flutter_application_1/Screens/Home%20Screen/homeScreen.dart';
+import 'package:flutter_application_1/Screens/Bottom%20Bar/bottomBar.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -18,7 +18,7 @@ class AuthGate extends StatelessWidget {
         }
 
         if (snapshot.hasData) {
-          return HomeScreen();
+          return BottomNavBar();
         }
 
         return LoginScreen();

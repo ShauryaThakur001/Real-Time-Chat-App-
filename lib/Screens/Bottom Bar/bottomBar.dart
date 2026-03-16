@@ -17,8 +17,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   List<Widget> pages = [
     HomeScreen(),
-    CallScreen(),
     ContactsScreen(),
+    CallScreen(),
     SettingScreen(),
   ];
   
@@ -27,6 +27,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return Scaffold(
       body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: currentIndex,
         onTap: (value) {
           setState(() {
@@ -40,8 +41,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
         showUnselectedLabels: true,
         items: [
         BottomNavigationBarItem(icon: Icon(Icons.chat),label: "Chats"),
-        BottomNavigationBarItem(icon: Icon(Icons.call),label: "Calls"),
         BottomNavigationBarItem(icon: Icon(Icons.person_search_rounded),label: "Contacts"),
+        BottomNavigationBarItem(icon: Icon(Icons.call),label: "Calls"),
         BottomNavigationBarItem(icon: Icon(Icons.settings),label: "Settings"),
       ]),
     );
