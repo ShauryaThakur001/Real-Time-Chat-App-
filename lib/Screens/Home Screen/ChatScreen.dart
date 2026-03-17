@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Screens/Home%20Screen/MessageBubble.dart';
 
 class ChatScreen extends StatelessWidget {
   final String userId;
@@ -14,6 +15,13 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    List messages = [
+  {"text": "Hello", "senderId": "user1"},
+  {"text": "Hi", "senderId": "user2"},
+  {"text": "How are you?", "senderId": "user1"},
+];
+    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -65,10 +73,10 @@ class ChatScreen extends StatelessWidget {
           PopupMenuButton(
             icon: Icon(Icons.more_vert, color: Colors.grey.shade800),
             itemBuilder: (context) => [
-              // PopupMenuItem(child: Text("View Contact")),
-              // PopupMenuItem(child: Text("Media")),
-              // PopupMenuItem(child: Text("Mute")),
-              // PopupMenuItem(child: Text("Block")),
+              PopupMenuItem(child: Text("View Contact")),
+              PopupMenuItem(child: Text("Media")),
+              PopupMenuItem(child: Text("Mute")),
+              PopupMenuItem(child: Text("Block")),
             ],
           ),
         ],
@@ -78,10 +86,19 @@ class ChatScreen extends StatelessWidget {
         backgroundColor: Colors.blueGrey.shade50,
         body: Column(
           children: [
+            SizedBox(height: 10,),
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.all(10),
-                children: [Text("Hello Shaurya"), Text("How are you??")],
+              child: ListView.builder(
+                itemCount: messages.length,
+                itemBuilder: (context, index) {
+
+                  var msg=messages[index];
+                  
+                  return MessageBubble(
+                    message: msg["text"], 
+                    isMe: msg["senderId"]=='user2'
+                    );
+                },
               ),
             ),
             Container(
@@ -95,7 +112,7 @@ class ChatScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     backgroundColor: Colors.grey.shade200,
-                    child: Icon(Icons.add, color: Colors.black),
+                    child: Icon(Icons.add, color: Colors.black,size: 30,),
                   ),
                   SizedBox(width: 8,),
                   Expanded(child: Container(
