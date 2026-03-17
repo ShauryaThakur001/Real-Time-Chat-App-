@@ -65,10 +65,10 @@ class ChatScreen extends StatelessWidget {
           PopupMenuButton(
             icon: Icon(Icons.more_vert, color: Colors.grey.shade800),
             itemBuilder: (context) => [
-              PopupMenuItem(child: Text("View Contact")),
-              PopupMenuItem(child: Text("Media")),
-              PopupMenuItem(child: Text("Mute")),
-              PopupMenuItem(child: Text("Block")),
+              // PopupMenuItem(child: Text("View Contact")),
+              // PopupMenuItem(child: Text("Media")),
+              // PopupMenuItem(child: Text("Mute")),
+              // PopupMenuItem(child: Text("Block")),
             ],
           ),
         ],
