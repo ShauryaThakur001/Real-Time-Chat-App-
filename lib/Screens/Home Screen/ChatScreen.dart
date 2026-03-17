@@ -18,11 +18,12 @@ class ChatScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
+
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: Colors.black),
         ),
 
         titleSpacing: 0,
@@ -31,23 +32,68 @@ class ChatScreen extends StatelessWidget {
           children: [
             CircleAvatar(radius: 18, backgroundImage: NetworkImage(photoUrl)),
             SizedBox(width: 10),
-            Text(name, style: TextStyle(fontSize: 20)),
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(
+                  "online",
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ],
+            ),
           ],
         ),
+
         actions: [
-          Icon(Icons.video_chat_rounded,size: 30,color: Colors.grey.shade800,),
-          SizedBox(width: 2,),
-          Icon(Icons.call,size: 28,color: Colors.grey.shade800,),
-          SizedBox(width: 20,),
-          Padding(
-            padding: const EdgeInsets.only(right: 15),
-            child: Icon(Icons.more_vert,size: 30,color: Colors.grey.shade800,),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.video_call, color: Colors.grey.shade800),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.call, color: Colors.grey.shade800),
+          ),
+          PopupMenuButton(
+            icon: Icon(Icons.more_vert, color: Colors.grey.shade800),
+            itemBuilder: (context) => [
+              PopupMenuItem(child: Text("View Contact")),
+              PopupMenuItem(child: Text("Media")),
+              PopupMenuItem(child: Text("Mute")),
+              PopupMenuItem(child: Text("Block")),
+            ],
           ),
         ],
       ),
       body: Scaffold(
         backgroundColor: Colors.blueGrey.shade50,
-      ),
+        body: Column(
+          children: [
+            Expanded(child: ListView(
+              padding: EdgeInsets.all(10),
+              children: [
+                Text("Hello Shaurya"),
+                Text("How are you??"),
+              ],
+            )),
+            Container(
+              child: Row(
+                children: [
+                  
+                ],
+              ),
+            )
+          ],
+        ),
+        ),
     );
   }
 }
