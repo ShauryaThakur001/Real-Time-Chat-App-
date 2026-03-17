@@ -74,26 +74,55 @@ class ChatScreen extends StatelessWidget {
         ],
       ),
       body: Scaffold(
+        resizeToAvoidBottomInset: true,
         backgroundColor: Colors.blueGrey.shade50,
         body: Column(
           children: [
-            Expanded(child: ListView(
-              padding: EdgeInsets.all(10),
-              children: [
-                Text("Hello Shaurya"),
-                Text("How are you??"),
-              ],
-            )),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.all(10),
+                children: [Text("Hello Shaurya"), Text("How are you??")],
+              ),
+            ),
             Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(top: BorderSide(color: Colors.grey.shade300)),
+              ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  
+                  CircleAvatar(
+                    backgroundColor: Colors.grey.shade200,
+                    child: Icon(Icons.add, color: Colors.black),
+                  ),
+                  SizedBox(width: 8,),
+                  Expanded(child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 13),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(25)
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(child: TextField(
+                          decoration: InputDecoration(hintText: "Type a message...",border: InputBorder.none),
+                        ))
+                      ],
+                    ),
+                  )),
+                  SizedBox(width: 8,),
+                  CircleAvatar(
+                    backgroundColor: Colors.blue,
+                    child: Icon(Icons.send,color: Colors.white,),
+                  )
                 ],
               ),
-            )
+            ),
           ],
         ),
-        ),
+      ),
     );
   }
 }
