@@ -125,7 +125,7 @@ class userChat extends StatelessWidget {
           ),
           title: Text(name, style: TextStyle(fontSize: 19)),
           onTap: () {
-            Navigator.push(context,MaterialPageRoute(builder: (context)=>ChatScreen(userId: uid)));
+            Navigator.push(context,MaterialPageRoute(builder: (context)=>ChatScreen(userId: uid,name: name, photoUrl: imageUrl,)));
           },
         ),
       ),
