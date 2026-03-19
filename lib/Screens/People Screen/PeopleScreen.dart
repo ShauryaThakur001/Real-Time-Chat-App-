@@ -64,7 +64,7 @@ class _ContactsScreenState extends State<ContactsScreen>
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection("users")
-                    .snapshots(), // ✅ get ALL users
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
