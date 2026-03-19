@@ -114,7 +114,6 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
 
-          /// 🔥 IMPORTANT FIX HERE
           Expanded(
             child: chatId.isEmpty
                 ? const Center(child: Text("Loading..."))
@@ -167,12 +166,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
           // 🔹 Input Bar
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            padding:const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white,
-              border:
-                  Border(top: BorderSide(color: Colors.grey.shade300)),
+              border:Border(top: BorderSide(color: Colors.grey.shade300)),
             ),
             child: Row(
               children: [
