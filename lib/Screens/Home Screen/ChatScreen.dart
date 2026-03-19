@@ -43,22 +43,23 @@ class _ChatScreenState extends State<ChatScreen> {
         .doc(chatId)
         .collection("messages")
         .add({
-      "text": text,
-      "senderId": currentUserId,
-      "timestamp": FieldValue.serverTimestamp(),
-    });
+          "text": text,
+          "senderId": currentUserId,
+          "timestamp": FieldValue.serverTimestamp(),
+        });
 
     messageController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    // 🔒 If auth not ready yet
-    if (currentUserId == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return Scaffold(body: Center(child: Text("Please login again")));
     }
+
+    final currentUserId = user.uid;
 
     return Scaffold(
       backgroundColor: Colors.blueGrey.shade50,
@@ -85,9 +86,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 Text(
                   widget.name,
                   style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
                 ),
                 const Text(
                   "online",
@@ -99,21 +101,23 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         actions: [
           IconButton(
-              icon: Icon(Icons.video_call, color: Colors.grey.shade800),
-              onPressed: () {}),
+            icon: Icon(Icons.video_call, color: Colors.grey.shade800),
+            onPressed: () {},
+          ),
           IconButton(
-              icon: Icon(Icons.call, color: Colors.grey.shade800),
-              onPressed: () {}),
+            icon: Icon(Icons.call, color: Colors.grey.shade800),
+            onPressed: () {},
+          ),
           IconButton(
-              icon: Icon(Icons.more_vert, color: Colors.grey.shade800),
-              onPressed: () {}),
+            icon: Icon(Icons.more_vert, color: Colors.grey.shade800),
+            onPressed: () {},
+          ),
         ],
       ),
 
       // 🔹 Body
       body: Column(
         children: [
-
           Expanded(
             child: chatId.isEmpty
                 ? const Center(child: Text("Loading..."))
@@ -125,17 +129,13 @@ class _ChatScreenState extends State<ChatScreen> {
                         .orderBy("timestamp", descending: true)
                         .snapshots(),
                     builder: (context, snapshot) {
-
                       // 🔄 Loading
-                      if (snapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return const Center(
-                            child: CircularProgressIndicator());
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
                       }
 
                       // 🟡 No messages yet
-                      if (!snapshot.hasData ||
-                          snapshot.data!.docs.isEmpty) {
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                         return const Center(
                           child: Text(
                             "Start chatting 👋",
@@ -151,8 +151,8 @@ class _ChatScreenState extends State<ChatScreen> {
                         padding: const EdgeInsets.all(10),
                         itemCount: messages.length,
                         itemBuilder: (context, index) {
-                          final data = messages[index].data()
-                              as Map<String, dynamic>;
+                          final data =
+                              messages[index].data() as Map<String, dynamic>;
 
                           return MessageBubble(
                             message: data["text"] ?? "",
@@ -166,10 +166,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
           // 🔹 Input Bar
           Container(
-            padding:const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white,
-              border:Border(top: BorderSide(color: Colors.grey.shade300)),
+              border: Border(top: BorderSide(color: Colors.grey.shade300)),
             ),
             child: Row(
               children: [
@@ -180,8 +180,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(25),
@@ -200,8 +199,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   backgroundColor: Colors.blue,
                   child: IconButton(
                     onPressed: sendMessage,
-                    icon:
-                        const Icon(Icons.send, color: Colors.white),
+                    icon: const Icon(Icons.send, color: Colors.white),
                   ),
                 ),
               ],
