@@ -73,7 +73,7 @@ class _ContactsScreenState extends State<ContactsScreen>
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return const Center(
                       child: Text(
-                        "No contacts found ",
+                        "No contacts found 👋",
                         style: TextStyle(color: Colors.grey),
                       ),
                     );
