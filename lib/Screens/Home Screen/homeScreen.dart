@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Firebase/Auth/EmailPasswordLogin.dart';
 import 'package:flutter_application_1/Screens/Home%20Screen/ChatScreen.dart';
@@ -15,6 +16,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -46,10 +50,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(14.0),
         child: Column(
           children: [
+
+            // 🔍 Search
             TextField(
               controller: searchCoontroller,
               decoration: InputDecoration(
@@ -64,14 +71,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
             SizedBox(height: 20),
 
+            // 👥 Users List
             Expanded(
-              child: StreamBuilder(
+              child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection("users")
                     .snapshots(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Center(child: Text("No users found"));
                   }
 
                   var users = snapshot.data!.docs;
@@ -79,19 +92,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   return ListView.separated(
                     itemCount: users.length,
                     itemBuilder: (context, index) {
-                      var user = users[index];
 
-                      return userChat(
-                        name: user["name"],
-                        imageUrl: user["photoUrl"],
-                        uid: user["uid"],
+                      var user = users[index];
+                      var data = user.data() as Map<String, dynamic>;
+
+                      // ✅ SKIP CURRENT USER (IMPORTANT)
+                      if (data["uid"] == currentUserId) {
+                        return SizedBox();
+                      }
+
+                      return UserChat(
+                        name: data["name"] ?? "Unknown",
+                        imageUrl: data["photoUrl"] ?? "",
+                        uid: data["uid"],
                       );
                     },
-                    separatorBuilder: (BuildContext context, int index) {
+                    separatorBuilder: (context, index) {
                       return Divider(
                         thickness: 0.6,
-                        color: Colors.grey.shade500,
-                        // indent: 70,
+                        color: Colors.grey.shade400,
                       );
                     },
                   );
@@ -105,30 +124,46 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class userChat extends StatelessWidget {
+class UserChat extends StatelessWidget {
   final String name;
   final String uid;
   final String imageUrl;
-  const userChat({super.key, required this.name, required this.imageUrl, required this.uid});
+
+  const UserChat({
+    super.key,
+    required this.name,
+    required this.imageUrl,
+    required this.uid,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 0),
-      child: Container(
-        // height: 100,
-        width: double.infinity,
-        child: ListTile(
-          leading: CircleAvatar(
-            radius: 25,
-            backgroundImage: NetworkImage(imageUrl),
-          ),
-          title: Text(name, style: TextStyle(fontSize: 19)),
-          onTap: () {
-            Navigator.push(context,MaterialPageRoute(builder: (context)=>ChatScreen(name: name, photoUrl: imageUrl, receiverId: uid,)));
-          },
-        ),
+    return ListTile(
+      leading: CircleAvatar(
+        radius: 25,
+        backgroundImage: imageUrl.isNotEmpty
+            ? NetworkImage(imageUrl)
+            : null,
+        child: imageUrl.isEmpty ? Icon(Icons.person) : null,
       ),
+
+      title: Text(
+        name,
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+      ),
+
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChatScreen(
+              name: name,
+              photoUrl: imageUrl,
+              receiverId: uid,
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -23,43 +23,25 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController messageController = TextEditingController();
 
-  // ✅ Current User ID (SAFE)
-  String? get currentUserId => FirebaseAuth.instance.currentUser?.uid;
-
-  // ✅ Chat ID (SAFE)
-  String get chatId {
-    if (currentUserId == null || widget.receiverId.isEmpty) return "";
-    return ChatService.getChatId(currentUserId!, widget.receiverId);
-  }
-
-  // ✅ Send Message
-  Future<void> sendMessage() async {
-    final text = messageController.text.trim();
-
-    if (text.isEmpty || currentUserId == null || chatId.isEmpty) return;
-
-    await FirebaseFirestore.instance
-        .collection("chats")
-        .doc(chatId)
-        .collection("messages")
-        .add({
-          "text": text,
-          "senderId": currentUserId,
-          "timestamp": FieldValue.serverTimestamp(),
-        });
-
-    messageController.clear();
-  }
-
   @override
   Widget build(BuildContext context) {
+
+    // ✅ ALWAYS get user here (not in initState / getter)
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      return Scaffold(body: Center(child: Text("Please login again")));
+      return Scaffold(
+        body: Center(child: Text("Please login again")),
+      );
     }
 
     final currentUserId = user.uid;
+
+    // ✅ SINGLE SOURCE OF chatId (VERY IMPORTANT)
+    final chatId = ChatService.getChatId(
+      currentUserId,
+      widget.receiverId,
+    );
 
     return Scaffold(
       backgroundColor: Colors.blueGrey.shade50,
@@ -99,85 +81,73 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.video_call, color: Colors.grey.shade800),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.call, color: Colors.grey.shade800),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.more_vert, color: Colors.grey.shade800),
-            onPressed: () {},
-          ),
-        ],
       ),
 
       // 🔹 Body
       body: Column(
         children: [
+
+          /// 🔥 Messages
           Expanded(
-            child: chatId.isEmpty
-                ? const Center(child: Text("Loading..."))
-                : StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection("chats")
-                        .doc(chatId)
-                        .collection("messages")
-                        .orderBy("timestamp", descending: true)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      // 🔄 Loading
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection("chats")
+                  .doc(chatId)
+                  .collection("messages")
+                  .orderBy("timestamp", descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
 
-                      // 🟡 No messages yet
-                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                        return const Center(
-                          child: Text(
-                            "Start chatting 👋",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        );
-                      }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                      final messages = snapshot.data!.docs;
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: Text("Start chatting 👋"),
+                  );
+                }
 
-                      return ListView.builder(
-                        reverse: true,
-                        padding: const EdgeInsets.all(10),
-                        itemCount: messages.length,
-                        itemBuilder: (context, index) {
-                          final data =
-                              messages[index].data() as Map<String, dynamic>;
+                final messages = snapshot.data!.docs;
 
-                          return MessageBubble(
-                            message: data["text"] ?? "",
-                            isMe: data["senderId"] == currentUserId,
-                          );
-                        },
-                      );
-                    },
-                  ),
+                return ListView.builder(
+                  reverse: true,
+                  padding: const EdgeInsets.all(10),
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+
+                    final data =
+                        messages[index].data() as Map<String, dynamic>;
+
+                    return MessageBubble(
+                      message: data["text"] ?? "",
+                      isMe: data["senderId"] == currentUserId,
+                    );
+                  },
+                );
+              },
+            ),
           ),
 
-          // 🔹 Input Bar
+          /// 🔹 Input Bar
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white,
-              border: Border(top: BorderSide(color: Colors.grey.shade300)),
+              border: Border(
+                top: BorderSide(color: Colors.grey.shade300),
+              ),
             ),
             child: Row(
               children: [
+
                 CircleAvatar(
                   backgroundColor: Colors.grey.shade200,
                   child: const Icon(Icons.add, color: Colors.black),
                 ),
+
                 const SizedBox(width: 8),
+
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -194,11 +164,29 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                 ),
+
                 const SizedBox(width: 8),
+
                 CircleAvatar(
                   backgroundColor: Colors.blue,
                   child: IconButton(
-                    onPressed: sendMessage,
+                    onPressed: () async {
+
+                      final text = messageController.text.trim();
+                      if (text.isEmpty) return;
+
+                      await FirebaseFirestore.instance
+                          .collection("chats")
+                          .doc(chatId)
+                          .collection("messages")
+                          .add({
+                        "text": text,
+                        "senderId": currentUserId,
+                        "timestamp": FieldValue.serverTimestamp(),
+                      });
+
+                      messageController.clear();
+                    },
                     icon: const Icon(Icons.send, color: Colors.white),
                   ),
                 ),
