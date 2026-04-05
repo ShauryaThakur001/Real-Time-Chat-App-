@@ -107,7 +107,7 @@ class _ContactsScreenState extends State<ContactsScreen>
 
                   final allUsers = snapshot.data!.docs;
 
-                  // ✅ Filter
+                  // ✅ Filters
                   final filteredUsers = allUsers.where((user) {
                     final data =
                         user.data() as Map<String, dynamic>;
